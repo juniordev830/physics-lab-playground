@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <optional>
 #include <string>
 
 namespace {
@@ -18,11 +19,10 @@ void populate(lab::PhysicsWorld& world) {
                         {32.0 + i * 6.0, -15.0}, 18.0 + (i % 4) * 6.0});
     }
 }
-
 } // namespace
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Physics Lab Playground");
+    sf::RenderWindow window(sf::VideoMode({WIDTH, HEIGHT}), "Physics Lab Playground");
     window.setVerticalSyncEnabled(true);
     lab::PhysicsWorld physics(WIDTH, HEIGHT);
     populate(physics);
@@ -38,24 +38,26 @@ int main() {
     };
 
     while (window.isOpen()) {
-        sf::Event event{};
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) window.close();
-            if (event.type == sf::Event::KeyPressed && !event.key.repeat) {
-                if (event.key.code == sf::Keyboard::Escape) window.close();
-                if (event.key.code == sf::Keyboard::Space) paused = !paused;
-                if (event.key.code == sf::Keyboard::R) {
+        while (const std::optional event = window.pollEvent()) {
+            if (event->is<sf::Event::Closed>()) {
+                window.close();
+            }
+            if (const auto* key = event->getIf<sf::Event::KeyPressed>()) {
+                if (key->code == sf::Keyboard::Key::Escape) window.close();
+                if (key->code == sf::Keyboard::Key::Space) paused = !paused;
+                if (key->code == sf::Keyboard::Key::R) {
                     populate(physics);
                     paused = false;
                     accumulator = 0.0;
                 }
             }
-            if (event.type == sf::Event::MouseButtonPressed &&
-                event.mouseButton.button == sf::Mouse::Left && physics.balls().size() < 120) {
-                const double x = event.mouseButton.x;
-                const double y = event.mouseButton.y;
-                const double r = 12.0 + (physics.balls().size() % 5) * 5.0;
-                physics.add_ball({{x, y}, {70.0 - r * 3.0, -170.0}, r});
+            if (const auto* mouse = event->getIf<sf::Event::MouseButtonPressed>()) {
+                if (mouse->button == sf::Mouse::Button::Left && physics.balls().size() < 120) {
+                    const double x = mouse->position.x;
+                    const double y = mouse->position.y;
+                    const double r = 12.0 + (physics.balls().size() % 5) * 5.0;
+                    physics.add_ball({{x, y}, {70.0 - r * 3.0, -170.0}, r});
+                }
             }
         }
 
@@ -69,25 +71,26 @@ int main() {
         }
 
         window.clear(sf::Color(12, 22, 39));
-        sf::VertexArray grid(sf::Lines);
         for (int x = 0; x <= static_cast<int>(WIDTH); x += 50) {
-            const sf::Color c(40, 63, 78, 95);
-            grid.append(sf::Vertex(sf::Vector2f(static_cast<float>(x), 0), c));
-            grid.append(sf::Vertex(sf::Vector2f(static_cast<float>(x), HEIGHT), c));
+            sf::RectangleShape line({1.0f, static_cast<float>(HEIGHT)});
+            line.setPosition({static_cast<float>(x), 0.0f});
+            line.setFillColor(sf::Color(40, 63, 78, 95));
+            window.draw(line);
         }
         for (int y = 0; y <= static_cast<int>(HEIGHT); y += 50) {
-            const sf::Color c(40, 63, 78, 95);
-            grid.append(sf::Vertex(sf::Vector2f(0, static_cast<float>(y)), c));
-            grid.append(sf::Vertex(sf::Vector2f(WIDTH, static_cast<float>(y)), c));
+            sf::RectangleShape line({static_cast<float>(WIDTH), 1.0f});
+            line.setPosition({0.0f, static_cast<float>(y)});
+            line.setFillColor(sf::Color(40, 63, 78, 95));
+            window.draw(line);
         }
-        window.draw(grid);
 
         const auto& bodies = physics.balls();
         for (std::size_t i = 0; i < bodies.size(); ++i) {
             const auto& ball = bodies[i];
-            sf::CircleShape shape(static_cast<float>(ball.radius), 48);
-            shape.setOrigin(static_cast<float>(ball.radius), static_cast<float>(ball.radius));
-            shape.setPosition(static_cast<float>(ball.position.x), static_cast<float>(ball.position.y));
+            const float radius = static_cast<float>(ball.radius);
+            sf::CircleShape shape(radius, 48);
+            shape.setOrigin({radius, radius});
+            shape.setPosition({static_cast<float>(ball.position.x), static_cast<float>(ball.position.y)});
             shape.setFillColor(palette[i % palette.size()]);
             shape.setOutlineThickness(2.0f);
             shape.setOutlineColor(sf::Color(222, 250, 255));
