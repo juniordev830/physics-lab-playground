@@ -18,7 +18,8 @@ O pacote `libsfml-dev` de sua distribuição precisa disponibilizar SFML 3. Caso
 ### Controles
 - **Clique esquerdo:** adiciona uma nova bola.
 - **Espaço:** pausa ou retoma a simulação.
-- **R:** reinicia com as oito bolas iniciais.
+- **R:** reinicia com as oito bolas iniciais e restaura a gravidade padrão.
+- **G:** liga ou desliga a gravidade durante a simulação.
 - **Esc:** fecha o aplicativo.
 
 O título da janela mostra a quantidade de partículas e o estado da simulação.
@@ -37,3 +38,10 @@ O GitHub Actions compila com SFML 3 e executa os testes de núcleo físico.
 
 ## Limitações
 Simulador aproximado, em 2D, com partículas circulares de massa equivalente; não é um motor físico completo. Ainda não há salvamento, reprodução de cenários, colisões com polígonos ou câmera 3D. É necessário ambiente gráfico para visualizar a aplicação.
+
+
+## Laboratório de gravidade e energia (novo)
+
+Pressione **G** para alternar a gravidade da demonstração entre **600 unidades/s²** e **0**, comparando trajetórias com e sem aceleração vertical. A barra de título exibe a gravidade atual e uma estimativa da **energia cinética somada das partículas**, com massa unitária para cada bola.
+
+A biblioteca `src/physics.hpp` fornece acesso controlado à gravidade e ao cálculo de energia, com testes cobrindo gravidade zero e negativa, entrada inválida e estado vazio. O cálculo é um indicador didático, **não** energia em joules reais nem simulação física de precisão.
