@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <limits>
 #include <stdexcept>
 
 using lab::Ball;
@@ -49,6 +50,31 @@ int main() {
         try { world.step(-.1); }
         catch (const std::invalid_argument&) { badStep = true; }
         check(badBall && badStep);
+    }
+    {
+        PhysicsWorld world(200, 200, 600);
+        world.add_ball({{50, 50}, {3, 4}, 10});
+        check(std::abs(world.kinetic_energy() - 12.5) < 1e-9);
+        check(std::abs(world.gravity() - 600) < 1e-9);
+        world.set_gravity(0);
+        world.step(.02);
+        check(std::abs(world.balls()[0].velocity.y - 4) < 1e-9);
+        check(std::abs(world.kinetic_energy() - 12.5) < 1e-9);
+        world.set_gravity(-50);
+        world.step(.02);
+        check(world.balls()[0].velocity.y < 4);
+        world.clear();
+        check(world.kinetic_energy() == 0.0);
+    }
+    {
+        PhysicsWorld world(200, 200);
+        for (double invalid : {std::numeric_limits<double>::infinity(), 2001.0, -2001.0}) {
+            bool rejected = false;
+            try { world.set_gravity(invalid); }
+            catch (const std::invalid_argument&) { rejected = true; }
+            check(rejected);
+            check(world.gravity() == 600.0);
+        }
     }
     std::cout << "Physics core tests passed" << std::endl;
 }
