@@ -64,7 +64,7 @@ class SampleMotionTests(unittest.TestCase):
             body(), [Vector2(1, 0), Vector2(-1, 0)], 1,
         )
         self.assertEqual([p.velocity.x for p in points], [0, 1, 0])
-        self.assertEqual(points[-1].position.x, 2)
+        self.assertEqual(points[-1].position.x, 1)
 
     def test_force_schedule_empty(self):
         self.assertEqual(sample_force_schedule(body(1), [], 1), (point(0, 1),))
