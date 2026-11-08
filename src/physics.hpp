@@ -41,6 +41,24 @@ public:
         balls_.push_back(ball);
     }
 
+    // Adjustable gravity keeps the simulation responsive to live UI controls.
+    void set_gravity(double value) {
+        if (!std::isfinite(value) || value < -2000.0 || value > 2000.0)
+            throw std::invalid_argument("Gravity must be finite and between -2000 and 2000");
+        gravity_ = value;
+    }
+
+    double gravity() const { return gravity_; }
+
+    // Unit-mass kinetic energy diagnostic: illustrative, not measured joules.
+    double kinetic_energy() const {
+        double total = 0.0;
+        for (const auto& ball : balls_)
+            total += 0.5 * (ball.velocity.x * ball.velocity.x +
+                            ball.velocity.y * ball.velocity.y);
+        return total;
+    }
+
     void clear() { balls_.clear(); }
     const std::vector<Ball>& balls() const { return balls_; }
 
