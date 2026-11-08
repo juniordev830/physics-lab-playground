@@ -45,8 +45,12 @@ int main() {
             if (const auto* key = event->getIf<sf::Event::KeyPressed>()) {
                 if (key->code == sf::Keyboard::Key::Escape) window.close();
                 if (key->code == sf::Keyboard::Key::Space) paused = !paused;
+                if (key->code == sf::Keyboard::Key::G) {
+                    physics.set_gravity(physics.gravity() == 0.0 ? 600.0 : 0.0);
+                }
                 if (key->code == sf::Keyboard::Key::R) {
                     populate(physics);
+                    physics.set_gravity(600.0);
                     paused = false;
                     accumulator = 0.0;
                 }
@@ -99,7 +103,9 @@ int main() {
         if (++titleFrames >= 30) {
             window.setTitle("Physics Lab Playground | Particulas: " +
                 std::to_string(bodies.size()) + (paused ? " | PAUSADO" : " | SIMULANDO") +
-                " | Clique: adicionar | Espaco: pausar | R: reiniciar");
+                " | Gravidade: " + std::to_string(static_cast<int>(physics.gravity())) +
+                " | Energia: " + std::to_string(static_cast<int>(physics.kinetic_energy())) +
+                " | G: gravidade | Espaco: pausar | R: reiniciar");
             titleFrames = 0;
         }
         window.display();
