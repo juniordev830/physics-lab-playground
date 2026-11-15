@@ -1,8 +1,8 @@
 # Physics Lab Playground
 
-Laboratório gráfico de física **planejado** para experimentar gravidade, colisões e objetos interativos.
+Laboratório experimental com **modelo físico 2D implementado em Python** para gravidade, colisão com o chão, pausa e reinício. Ainda não existe visualizador gráfico interativo.
 
-> **Estado atual:** repositório de concepção, sem engine, simulação, cenas ou testes implementados.
+> **Estado da `main`:** simulador numérico em `core.py`, suíte de testes e workflow de CI. É um modelo didático, não uma engine nem uma simulação científica validada.
 
 ## Primeira versão
 
@@ -27,14 +27,14 @@ Uma tela 2D de laboratório com chão, um retângulo e uma esfera simulados. O u
 ## Desenvolvimento por etapas
 
 - [ ] Definir unidades, integração numérica e limites de segurança.
-- [ ] Implementar simulação pura com testes de movimento e colisão.
+- [x] Implementar simulação pura com testes de movimento e colisão.
 - [ ] Adicionar visualizador simples e controle de pausa/tempo.
 - [ ] Registrar diferenças entre passo fixo e variável.
 - [ ] Testar desempenho e documentação de execução antes de anunciar demo.
 
 Não usar resultados aproximados do jogo como simulação física científica validada.
 
-## Primeiro incremento de código (em revisão)
+## Primeiro incremento de código (disponível na `main`)
 
 Modelo 2D de gravidade e colisão com chão, pausa e reinício; integração numérica semi-implícita.
 
