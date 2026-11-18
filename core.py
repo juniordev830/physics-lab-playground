@@ -4,9 +4,15 @@ from math import isfinite
 
 
 def finite(value: float, name: str) -> float:
-    if isinstance(value, bool) or not isinstance(value, (float, int)) or not isfinite(value):
+    if isinstance(value, bool) or not isinstance(value, (float, int)):
         raise ValueError(f"{name} must be finite")
-    return float(value)
+    try:
+        result = float(value)
+    except OverflowError as error:
+        raise ValueError(f"{name} must be finite") from error
+    if not isfinite(result):
+        raise ValueError(f"{name} must be finite")
+    return result
 
 
 @dataclass(frozen=True)
@@ -28,6 +34,8 @@ class World:
     """Semi-implicit Euler with a ground at y=0 and deterministic reset."""
 
     def __init__(self, body: Body, gravity: float = 9.81, restitution: float = 0):
+        if not isinstance(body, Body):
+            raise ValueError("world must start with a body")
         self.initial = body
         self.gravity = finite(gravity, "gravity")
         self.restitution = finite(restitution, "restitution")

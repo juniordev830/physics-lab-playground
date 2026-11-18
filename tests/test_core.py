@@ -33,12 +33,16 @@ class PhysicsTests(unittest.TestCase):
 
     def test_invalid_inputs_do_not_advance(self):
         world = World(Body(0, 1))
-        for bad in (-1, 0, nan, float("inf"), 1):
+        for bad in (-1, 0, nan, float("inf"), 10**400, 1):
             with self.assertRaises(ValueError):
                 world.step(bad)
         self.assertEqual(world.time, 0)
         with self.assertRaises(ValueError):
             Body(0, 1, mass=-1)
+        with self.assertRaises(ValueError):
+            Body(0, 1, vx=10**400)
+        with self.assertRaisesRegex(ValueError, "must start with a body"):
+            World(None)
 
 
 if __name__ == "__main__":
